@@ -4,6 +4,7 @@ import { jsxRenderer } from 'hono/jsx-renderer';
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
+import { NotFound } from './pages/NotFound';
 
 type Bindings = {
   ASSETS: Fetcher;
@@ -18,10 +19,20 @@ app.get('*', jsxRenderer());
 app.get('/', (c) => c.render(<Home />));
 app.get('/about', (c) => c.render(<About />));
 app.get('/contact', (c) => c.render(<Contact />));
+// app.notFound((c) => c.render(<NotFound />));
 
-// 静的ファイルのフォールバック
-app.use('*', async (c) => {
-  return await c.env.ASSETS.fetch(c.req.raw);
+// // 静的ファイルのフォールバック
+// app.use('*', async (c) => {
+//   return await c.env.ASSETS.fetch(c.req.raw);
+// });
+
+// notFound にて SSR or 静的ファイル返却 or 404
+app.notFound(async (c) => {
+  const res = await c.env.ASSETS.fetch(c.req.raw);
+  if (res.status === 404) {
+    return c.render(<NotFound />);
+  }
+  return res;
 });
 
 export default app;
