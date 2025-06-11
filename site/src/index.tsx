@@ -4,6 +4,7 @@ import { jsxRenderer } from 'hono/jsx-renderer';
 import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
+import { Blog } from './pages/Blog';
 import { NotFound } from './pages/NotFound';
 
 type Bindings = {
@@ -19,6 +20,7 @@ app.get('*', jsxRenderer());
 app.get('/', (c) => c.render(<Home />));
 app.get('/about', (c) => c.render(<About />));
 app.get('/contact', (c) => c.render(<Contact />));
+app.get('/blog', (c) => c.render(<Blog />));
 // app.notFound((c) => c.render(<NotFound />));
 
 // // 静的ファイルのフォールバック

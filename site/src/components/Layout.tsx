@@ -11,7 +11,7 @@ export const Layout = (props: { children: any; title?: string }) => {
         <header>
           <nav>
             <a href='/'>Home</a> | <a href='/about'>About</a> |{' '}
-            <a href='/contact'>Contact</a>
+            <a href='/contact'>Contact</a> | <a href='/blog'>Blog</a>
           </nav>
         </header>
         <main>{props.children}</main>
