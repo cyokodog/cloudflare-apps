@@ -5,10 +5,14 @@ import { Home } from './pages/Home';
 import { About } from './pages/About';
 import { Contact } from './pages/Contact';
 import { Blog } from './pages/Blog';
+import { BlogPost } from './pages/BlogPost';
 import { NotFound } from './pages/NotFound';
+import { getBlogPostById as getMockBlogPostById } from './mockData/getBlogMock';
+import { getBlogPosts, getBlogPostById } from './db/blogDatabase';
 
 type Bindings = {
   ASSETS: Fetcher;
+  DB: D1Database;
 };
 
 const app = new Hono<{ Bindings: Bindings }>();
@@ -20,7 +24,26 @@ app.get('*', jsxRenderer());
 app.get('/', (c) => c.render(<Home />));
 app.get('/about', (c) => c.render(<About />));
 app.get('/contact', (c) => c.render(<Contact />));
-app.get('/blog', (c) => c.render(<Blog />));
+app.get('/blog', (c) => c.render(<Blog env={c.env} />));
+app.get('/blog/:id', async (c) => {
+  const id = c.req.param('id');
+  try {
+    // D1データベースからブログ記事を取得
+    const post = await getBlogPostById(id, c.env);
+    if (!post) {
+      return c.redirect('/blog');
+    }
+    return c.render(<BlogPost req={c.req} env={c.env} />);
+  } catch (error) {
+    console.error('Error fetching blog post:', error);
+    // エラー時はモックデータにフォールバック
+    const mockPost = getMockBlogPostById(id);
+    if (!mockPost) {
+      return c.redirect('/blog');
+    }
+    return c.render(<BlogPost req={c.req} env={c.env} />);
+  }
+});
 // app.notFound((c) => c.render(<NotFound />));
 
 // // 静的ファイルのフォールバック
